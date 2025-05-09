@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: shipment-card
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10
+      - key: DATABASE_URL
+        value: postgresql://neondb_owner:npg_dFsLfMg6e5Rj@ep-holy-water-a1hs2b11-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
