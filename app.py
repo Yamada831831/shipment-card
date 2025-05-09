@@ -230,12 +230,22 @@ def cards_select():
         week_str = request.form.get("target_week")
         type_ = request.form.get("target_type") or ""
         only_unprinted = request.form.get("only_unprinted")
+        sort_col = request.form.get("sort") or "shipment_date"
+        sort_order = request.form.get("order") or "asc"
 
         # 安定した週→月曜日変換
         year, week = week_str.split("-W")
         monday = datetime.datetime.strptime(f"{year} {week} 1", "%G %V %u").date()
         sunday = monday + datetime.timedelta(days=6)
 
+        # 並び替え対象カラムのバリデーション
+        valid_cols = {"shipment_no", "shipment_date", "ship_to", "product", "origin", "spec", "quantity", "type", "printed"}
+        if sort_col not in valid_cols:
+            sort_col = "shipment_date"
+        if sort_order not in {"asc", "desc"}:
+            sort_order = "asc"
+
+        # SQL生成
         query = "SELECT * FROM shipment_orders WHERE shipment_date BETWEEN :monday AND :sunday"
         params = {"monday": monday, "sunday": sunday}
 
@@ -246,7 +256,7 @@ def cards_select():
         if only_unprinted:
             query += " AND printed = FALSE"
 
-        query += " ORDER BY shipment_no"
+        query += f" ORDER BY {sort_col} {sort_order}, shipment_no"
 
         df = pd.read_sql(text(query), engine, params=params)
 
@@ -254,7 +264,9 @@ def cards_select():
                                orders=df.to_dict(orient="records"),
                                target_week=week_str,
                                target_type=type_,
-                               only_unprinted=only_unprinted)
+                               only_unprinted=only_unprinted,
+                               sort=sort_col,
+                               order=sort_order)
 
     return render_template("cards_select.html", orders=None)
 
