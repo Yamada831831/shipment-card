@@ -1,0 +1,8 @@
+flask
+pandas
+sqlalchemy
+psycopg2-binary
+jinja2
+pdfkit
+openpyxl
+gunicorn
