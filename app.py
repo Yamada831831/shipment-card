@@ -483,6 +483,10 @@ def master_specifications():
 def index():
     return redirect("/orders")
 
+@app.route("/ping")
+def ping():
+    return "pong", 200
+
 
 
 if __name__ == "__main__":
