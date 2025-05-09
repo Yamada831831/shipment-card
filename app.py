@@ -197,8 +197,9 @@ def cards_generate():
     df["display_date"] = df["shipment_date"].apply(lambda x: x.strftime("%Y/%m/%d"))
 
     # テンプレート読み込み・HTML構築（←ここが重要！）
+    font_path = os.path.abspath("static/fonts/ipaexg.ttf")
     template = env.get_template("card_templates.html")
-    html = template.render(rows=df.to_dict(orient="records"))
+    html = template.render(rows=df.to_dict(orient="records"), font_path=font_path)
 
     wkhtmltopdf_path = shutil.which("wkhtmltopdf")
     config = pdfkit.configuration(wkhtmltopdf=wkhtmltopdf_path)
