@@ -208,7 +208,10 @@ def cards_generate():
             html,
             tmpfile.name,
             configuration=config,
-            options={"enable-local-file-access": ""}
+            options = {
+                "enable-local-file-access": "",
+                "encoding": "UTF-8"
+            }
         )
 
         # printed = TRUE に更新
