@@ -121,6 +121,7 @@
       <col style="width: 60%">
     </colgroup>
     <tr><td class="no-cell" colspan="3">No. {{ row.shipment_no }}</td></tr>
+    <tr><td class="no-cell" colspan="3">配送便： {{ row.delivery }}</td></tr>
     <tr class="title-row"><td>出荷日</td><td>曜日</td><td>お客様名</td></tr>
     <tr>
       <td class="data-cell">{{ display_date }}</td>
@@ -148,7 +149,7 @@
       <td class="data-cell">{{ row.total_quantity }}</td>
     </tr>
   </table>
-
+ 
   <div class="section-heading">【使用包材】</div>
   <table>
     <tr class="title-row"><td>袋</td><td>表シール</td><td>裏シール</td></tr>
