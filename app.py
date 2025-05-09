@@ -66,7 +66,8 @@ def upload():
                 })
 
         shipment_df = pd.DataFrame(records)
-        shipment_df['key'] = shipment_df[['ship_to', 'product', 'spec', 'origin']].agg('|'.join, axis=1)
+        shipment_df['key'] = shipment_df[['ship_to', 'product', 'spec', 'origin']].fillna('').agg('|'.join, axis=1)
+
 
         master_df = pd.read_sql("SELECT ship_to, product, spec, origin FROM master_specifications", engine)
         master_df['key'] = master_df[['ship_to', 'product','spec','origin']].fillna('').agg('|'.join, axis=1)
