@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>出荷予定一覧</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="p-4">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/">蔵出しシステム</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item"><a class="nav-link" href="/orders">出荷予定一覧</a></li>
+        <li class="nav-item"><a class="nav-link" href="/upload">出荷予定アップロード</a></li>
+        <li class="nav-item"><a class="nav-link" href="/add_order">追加注文入力</a></li>
+        <li class="nav-item"><a class="nav-link" href="/master_specifications">マスタ編集</a></li>
+        <li class="nav-item"><a class="nav-link" href="/cards_select">カード出力</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  <div class="container">
+    <h2 class="mb-4">出荷予定一覧</h2>
+
+    <form method="get" action="/orders" class="row g-3 mb-4">
+      <div class="col-md-3">
+        <label for="date" class="form-label">対象日（週指定）</label>
+        <input type="date" class="form-control" name="date" id="date">
+      </div>
+      <div class="col-md-3">
+        <label for="ship_to" class="form-label">出荷先（曖昧可）</label>
+        <input type="text" class="form-control" name="ship_to" id="ship_to">
+      </div>
+      <div class="col-md-3">
+        <label for="no" class="form-label">蔵出しNo</label>
+        <input type="number" class="form-control" name="no" id="no">
+      </div>
+      <div class="col-md-3 align-self-end">
+        <button type="submit" class="btn btn-primary w-100">検索</button>
+      </div>
+    </form>
+
+    {% if rows %}
+    <table class="table table-bordered table-sm">
+      <thead class="table-light">
+        <tr>
+          <th>No</th>
+          <th>出荷日</th>
+          <th>出荷先</th>
+          <th>商品</th>
+          <th>産地</th>
+          <th>規格</th>
+          <th>入数</th>
+          <th>出荷数</th>
+          <th>形態</th>
+          <th>合計数量</th>
+          <th>印刷</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+        <tr>
+          <td><a href="/order/{{ row.shipment_no }}">{{ row.shipment_no }}</a></td>
+          <td>{{ row.shipment_date }}</td>
+          <td>{{ row.ship_to }}</td>
+          <td>{{ row.product }}</td>
+          <td>{{ row.origin }}</td>
+          <td>{{ row.spec }}</td>
+          <td>{{ row.unit_count | int if row.unit_count is not none else '' }}</td>
+          <td>{{ row.quantity }}</td>
+          <td>{{ row.form }}</td>
+          <td>{{ row.total_quantity | int if row.total_quantity is not none else '' }}</td>
+          <td>
+            {% if row.printed %}
+              ✅ 済
+            {% else %}
+              ⬜ 未
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p>📭 表示する出荷予定がありません。</p>
+    {% endif %}
+  </div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

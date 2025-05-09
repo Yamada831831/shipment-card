@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>蔵出しカード</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 0mm 10mm 5mm 10mm;
+    }
+    body {
+      font-family: "HG丸ｺﾞｼｯｸM-PRO", sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin-bottom: 5.5mm;
+      table-layout: fixed;
+    }
+    td {
+      border-width: 1px;
+      border-style: solid;
+      border-color: black;
+      padding: 4px;
+      text-align: center;
+      vertical-align: middle;
+      word-break: break-word;
+      box-sizing: border-box;
+    }
+    tr:last-child td {
+      border-right: 1px solid black;
+    }
+    .section-heading {
+      font-weight: bold;
+      margin: 10px 0 2px 0;
+      font-size: 12pt;
+    }
+    .title-row td {
+      height: 25px;
+      font-size: 12pt;
+    }
+    .data-cell {
+      height: 50px;
+      font-size: 13pt;
+    }
+    .data-cell:empty::after {
+      content: "\00a0";
+    }
+    .no-cell {
+      border: none;
+      text-align: right;
+      font-weight: bold;
+      height: 25px;
+      font-size: 12pt;
+    }
+    .divider {
+      border-top: 2px solid #000;
+      margin: 10mm 0;
+    }
+  </style>
+</head>
+<body>
+{% for row in rows %}
+{% set shipment_date_parts = row.shipment_date|string %}
+{% set m = shipment_date_parts[5:7]|int %}
+{% set d = shipment_date_parts[8:10]|int %}
+{% set display_date = m ~ '月' ~ d ~ '日' %}
+<div>
+
+  <table>
+    <colgroup>
+      <col style="width: 25%">
+      <col style="width: 15%">
+      <col style="width: 60%">
+    </colgroup>
+    <tr><td class="no-cell" colspan="3">No. {{ row.shipment_no }}</td></tr>
+    <tr class="title-row"><td>出荷日</td><td>曜日</td><td>お客様名</td></tr>
+    <tr>
+      <td class="data-cell">{{ display_date }}</td>
+      <td class="data-cell">（{{ row.weekday }}）</td>
+      <td class="data-cell">{{ row.ship_to }}</td>
+    </tr>
+  </table>
+
+  <table>
+    <colgroup>
+      <col style="width: 28%">
+      <col style="width: 14%">
+      <col style="width: 28%">
+      <col style="width: 10%">
+      <col style="width: 10%">
+      <col style="width: 10%">
+    </colgroup>
+    <tr class="title-row"><td>商品名</td><td>産地</td><td>規格</td><td>入数</td><td>出荷数</td><td>袋枚数</td></tr>
+    <tr>
+      <td class="data-cell">{{ row.product }}</td>
+      <td class="data-cell">{{ row.origin }}</td>
+      <td class="data-cell">{{ row.spec }}</td>
+      <td class="data-cell">{{ row.unit_count }}</td>
+      <td class="data-cell">{{ row.quantity }}</td>
+      <td class="data-cell">{{ row.total_quantity }}</td>
+    </tr>
+  </table>
+
+  <div class="divider"></div>
+
+  <table>
+    <colgroup>
+      <col style="width: 25%">
+      <col style="width: 15%">
+      <col style="width: 60%">
+    </colgroup>
+    <tr><td class="no-cell" colspan="3">No. {{ row.shipment_no }}</td></tr>
+    <tr class="title-row"><td>出荷日</td><td>曜日</td><td>お客様名</td></tr>
+    <tr>
+      <td class="data-cell">{{ display_date }}</td>
+      <td class="data-cell">（{{ row.weekday }}）</td>
+      <td class="data-cell">{{ row.ship_to }}</td>
+    </tr>
+  </table>
+
+  <table>
+    <colgroup>
+      <col style="width: 28%">
+      <col style="width: 14%">
+      <col style="width: 28%">
+      <col style="width: 10%">
+      <col style="width: 10%">
+      <col style="width: 10%">
+    </colgroup>
+    <tr class="title-row"><td>商品名</td><td>産地</td><td>規格</td><td>入数</td><td>出荷数</td><td>袋枚数</td></tr>
+    <tr>
+      <td class="data-cell">{{ row.product }}</td>
+      <td class="data-cell">{{ row.origin }}</td>
+      <td class="data-cell">{{ row.spec }}</td>
+      <td class="data-cell">{{ row.unit_count }}</td>
+      <td class="data-cell">{{ row.quantity }}</td>
+      <td class="data-cell">{{ row.total_quantity }}</td>
+    </tr>
+  </table>
+
+  <div class="section-heading">【使用包材】</div>
+  <table>
+    <tr class="title-row"><td>袋</td><td>表シール</td><td>裏シール</td></tr>
+    <tr>
+      <td class="data-cell">{{ row.bag }}</td>
+      <td class="data-cell">{{ row.label_front }}</td>
+      <td class="data-cell">{{ row.label_back }}</td>
+    </tr>
+    <tr class="title-row"><td>その他1</td><td>その他2</td><td>JAN下6桁</td></tr>
+    <tr>
+      <td class="data-cell">{{ row.other1 }}</td>
+      <td class="data-cell">{{ row.other2 }}</td>
+      <td class="data-cell">{{ row.jan_code }}</td>
+    </tr>
+  </table>
+
+  <div class="section-heading">【過不足記入欄】</div>
+  <table>
+    <tr class="title-row">
+      <td style="width: 12%">袋</td>
+      <td style="width: 12%">表シール</td>
+      <td style="width: 12%">裏シール</td>
+      <td style="width: 64%">理由</td>
+    </tr>
+    <tr>
+      <td class="data-cell"></td>
+      <td class="data-cell"></td>
+      <td class="data-cell"></td>
+      <td class="data-cell"></td>
+    </tr>
+  </table>
+
+  <table>
+    <tr class="title-row"><td>発行</td><td>蔵出し</td><td>現場支給</td><td>完成確認</td></tr>
+    <tr>
+      <td class="data-cell"></td>
+      <td class="data-cell"></td>
+      <td class="data-cell"></td>
+      <td class="data-cell"></td>
+    </tr>
+  </table>
+
+  <div class="divider"></div>
+
+  <table>
+    <colgroup>
+      <col style="width: 33%">
+      <col style="width: 33%">
+      <col style="width: 34%">
+    </colgroup>
+    <tr><td class="no-cell" colspan="3">No. {{ row.shipment_no }}</td></tr>
+    <tr>
+      <td class="title-row">{{ row.form }}</td>
+      <td class="title-row">{{ row.quantity }}</td>
+      <td class="title-row">{{ row.delivery }}</td>
+    </tr>
+  </table>
+
+  <table>
+    <colgroup>
+      <col style="width: 18%">
+      <col style="width: 12%">
+      <col style="width: 28%">
+      <col style="width: 12%">
+      <col style="width: 30%">
+    </colgroup>
+    <tr class="title-row"><td>出荷日</td><td>曜日</td><td>お客様名</td><td>産地</td><td>商品名</td></tr>
+    <tr>
+      <td class="data-cell">{{ display_date }}</td>
+      <td class="data-cell">（{{ row.weekday }}）</td>
+      <td class="data-cell">{{ row.ship_to }}</td>
+      <td class="data-cell">{{ row.origin }}</td>
+      <td class="data-cell">{{ row.product }}</td>
+    </tr>
+  </table>
+
+</div>
+{% endfor %}
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>出荷予定詳細</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="p-4">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/">蔵出しシステム</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item"><a class="nav-link" href="/orders">出荷予定一覧</a></li>
+        <li class="nav-item"><a class="nav-link" href="/upload">出荷予定アップロード</a></li>
+        <li class="nav-item"><a class="nav-link" href="/add_order">追加注文入力</a></li>
+        <li class="nav-item"><a class="nav-link" href="/master_specifications">マスタ編集</a></li>
+        <li class="nav-item"><a class="nav-link" href="/cards_select">カード出力</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
+  <div class="container">
+    <h2 class="mb-4">蔵出しNo {{ row.shipment_no }} の詳細</h2>
+
+    <table class="table table-bordered">
+      <tr><th>出荷日</th><td>{{ row.shipment_date }}</td></tr>
+      <tr><th>曜日</th><td>{{ row.weekday }}</td></tr>
+      <tr><th>出荷先</th><td>{{ row.ship_to }}</td></tr>
+      <tr><th>商品</th><td>{{ row.product }}</td></tr>
+      <tr><th>産地</th><td>{{ row.origin }}</td></tr>
+      <tr><th>規格</th><td>{{ row.spec }}</td></tr>
+      <tr><th>入数</th><td>{{ row.unit_count or '' }}</td></tr>
+      <tr><th>出荷数</th><td>{{ row.quantity }}</td></tr>
+      <tr><th>形態</th><td>{{ row.form }}</td></tr>
+      <tr><th>袋</th><td>{{ row.bag or '' }}</td></tr>
+      <tr><th>表シール</th><td>{{ row.label_front or '' }}</td></tr>
+      <tr><th>裏シール</th><td>{{ row.label_back or '' }}</td></tr>
+      <tr><th>その他1</th><td>{{ row.other1 or '' }}</td></tr>
+      <tr><th>その他2</th><td>{{ row.other2 or '' }}</td></tr>
+      <tr><th>JANコード</th><td>{{ row.jan_code or '' }}</td></tr>
+      <tr><th>結束数</th><td>{{ row.bundle_count or '' }}</td></tr>
+      <tr><th>配送便</th><td>{{ row.delivery or '' }}</td></tr>
+      <tr><th>印刷済み</th>
+          <td>{% if row.printed %}✅ 済{% else %}⬜ 未{% endif %}</td></tr>
+    </table>
+
+    <a href="/orders" class="btn btn-secondary">一覧に戻る</a>
+  </div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
