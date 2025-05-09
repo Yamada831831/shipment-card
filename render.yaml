@@ -3,7 +3,8 @@ services:
     name: shipment-card
     env: python
     buildCommand: |
-      apt-get update && apt-get install -y wkhtmltopdf
+      apt-get update
+      apt-get install -y wkhtmltopdf fonts-noto-cjk
       pip install -r requirements.txt
     startCommand: gunicorn app:app
     envVars:
