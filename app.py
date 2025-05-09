@@ -224,51 +224,51 @@ def cards_generate():
 
         return send_file(tmpfile.name, as_attachment=True, download_name="蔵出しカード.pdf")
 
-@app.route("/cards_select", methods=["GET", "POST"])
+@app.route("/cards_select", methods=["GET"])
 def cards_select():
-    if request.method == "POST":
-        week_str = request.form.get("target_week")
-        type_ = request.form.get("target_type") or ""
-        only_unprinted = request.form.get("only_unprinted")
-        sort_col = request.form.get("sort") or "shipment_date"
-        sort_order = request.form.get("order") or "asc"
+    week_str = request.args.get("target_week")
+    type_ = request.args.get("target_type") or ""
+    only_unprinted = request.args.get("only_unprinted")
+    sort_col = request.args.get("sort") or "shipment_date"
+    sort_order = request.args.get("order") or "asc"
 
-        # 安定した週→月曜日変換
-        year, week = week_str.split("-W")
-        monday = datetime.datetime.strptime(f"{year} {week} 1", "%G %V %u").date()
-        sunday = monday + datetime.timedelta(days=6)
+    if not week_str:
+        return render_template("cards_select.html", orders=None)
 
-        # 並び替え対象カラムのバリデーション
-        valid_cols = {"shipment_no", "shipment_date", "ship_to", "product", "origin", "spec", "quantity", "type", "printed"}
-        if sort_col not in valid_cols:
-            sort_col = "shipment_date"
-        if sort_order not in {"asc", "desc"}:
-            sort_order = "asc"
+    # 安定した週→月曜日変換
+    year, week = week_str.split("-W")
+    monday = datetime.datetime.strptime(f"{year} {week} 1", "%G %V %u").date()
+    sunday = monday + datetime.timedelta(days=6)
 
-        # SQL生成
-        query = "SELECT * FROM shipment_orders WHERE shipment_date BETWEEN :monday AND :sunday"
-        params = {"monday": monday, "sunday": sunday}
+    # 並び替え対象カラムのバリデーション
+    valid_cols = {"shipment_no", "shipment_date", "ship_to", "product", "origin", "spec", "quantity", "type", "printed"}
+    if sort_col not in valid_cols:
+        sort_col = "shipment_date"
+    if sort_order not in {"asc", "desc"}:
+        sort_order = "asc"
 
-        if type_:
-            query += " AND type = :type"
-            params["type"] = type_
+    # SQL生成
+    query = "SELECT * FROM shipment_orders WHERE shipment_date BETWEEN :monday AND :sunday"
+    params = {"monday": monday, "sunday": sunday}
 
-        if only_unprinted:
-            query += " AND printed = FALSE"
+    if type_:
+        query += " AND type = :type"
+        params["type"] = type_
 
-        query += f" ORDER BY {sort_col} {sort_order}, shipment_no"
+    if only_unprinted:
+        query += " AND printed = FALSE"
 
-        df = pd.read_sql(text(query), engine, params=params)
+    query += f" ORDER BY {sort_col} {sort_order}, shipment_no"
 
-        return render_template("cards_select.html",
-                               orders=df.to_dict(orient="records"),
-                               target_week=week_str,
-                               target_type=type_,
-                               only_unprinted=only_unprinted,
-                               sort=sort_col,
-                               order=sort_order)
+    df = pd.read_sql(text(query), engine, params=params)
 
-    return render_template("cards_select.html", orders=None)
+    return render_template("cards_select.html",
+                           orders=df.to_dict(orient="records"),
+                           target_week=week_str,
+                           target_type=type_,
+                           only_unprinted=only_unprinted,
+                           sort=sort_col,
+                           order=sort_order)
 
 
 @app.route("/orders")

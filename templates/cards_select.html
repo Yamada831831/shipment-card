@@ -33,7 +33,7 @@
 
   <h2>蔵出しカード出力（チェック式）</h2>
 
-  <form method="POST" action="/cards_select">
+  <form method="GET" action="/cards_select">
     <div class="filter-row">
       <label>週（出荷日で判定）:
         <input type="week" name="target_week" required>
@@ -66,15 +66,15 @@
           <th>
             <input type="checkbox" id="select_all" onclick="toggleAll(this)">
           </th>
-          <th><a href="?sort=shipment_no">No</a></th>
-          <th><a href="?sort=shipment_date">日付</a></th>
-          <th><a href="?sort=ship_to">出荷先</a></th>
-          <th><a href="?sort=product">商品</a></th>
-          <th><a href="?sort=origin">産地</a></th>
-          <th><a href="?sort=spec">規格</a></th>
-          <th><a href="?sort=quantity">出荷数</a></th>
-          <th><a href="?sort=type">蔵出し種別</a></th>
-          <th><a href="?sort=printed">印刷済</a></th>
+          <th><a href="?sort=shipment_no&order={{ 'desc' if sort == 'shipment_no' and order == 'asc' else 'asc' }}&target_week={{ target_week }}&target_type={{ target_type }}{% if only_unprinted %}&only_unprinted=1{% endif %}">No</a></th>
+          <th><a href="?sort=shipment_date&order={{ 'desc' if sort == 'shipment_date' and order == 'asc' else 'asc' }}&target_week={{ target_week }}&target_type={{ target_type }}{% if only_unprinted %}&only_unprinted=1{% endif %}">日付</a></th>
+          <th><a href="?sort=ship_to&order={{ 'desc' if sort == 'ship_to' and order == 'asc' else 'asc' }}&target_week={{ target_week }}&target_type={{ target_type }}{% if only_unprinted %}&only_unprinted=1{% endif %}">出荷先</a></th>
+          <th><a href="?sort=product&order={{ 'desc' if sort == 'product' and order == 'asc' else 'asc' }}&target_week={{ target_week }}&target_type={{ target_type }}{% if only_unprinted %}&only_unprinted=1{% endif %}">商品</a></th>
+          <th><a href="?sort=origin&order={{ 'desc' if sort == 'origin' and order == 'asc' else 'asc' }}&target_week={{ target_week }}&target_type={{ target_type }}{% if only_unprinted %}&only_unprinted=1{% endif %}">産地</a></th>
+          <th><a href="?sort=spec&order={{ 'desc' if sort == 'spec' and order == 'asc' else 'asc' }}&target_week={{ target_week }}&target_type={{ target_type }}{% if only_unprinted %}&only_unprinted=1{% endif %}">規格</a></th>
+          <th><a href="?sort=quantity&order={{ 'desc' if sort == 'quantity' and order == 'asc' else 'asc' }}&target_week={{ target_week }}&target_type={{ target_type }}{% if only_unprinted %}&only_unprinted=1{% endif %}">出荷数</a></th>
+          <th><a href="?sort=type&order={{ 'desc' if sort == 'type' and order == 'asc' else 'asc' }}&target_week={{ target_week }}&target_type={{ target_type }}{% if only_unprinted %}&only_unprinted=1{% endif %}">蔵出し種別</a></th>
+          <th><a href="?sort=printed&order={{ 'desc' if sort == 'printed' and order == 'asc' else 'asc' }}&target_week={{ target_week }}&target_type={{ target_type }}{% if only_unprinted %}&only_unprinted=1{% endif %}">印刷済</a></th>
         </tr>
       </thead>
       <tbody>
