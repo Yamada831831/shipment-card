@@ -8,6 +8,7 @@ from jinja2 import Environment, FileSystemLoader
 import pdfkit
 import tempfile
 from sqlalchemy import text
+import shutil
 
 app = Flask(__name__)
 UPLOAD_FOLDER = "data"
@@ -199,10 +200,8 @@ def cards_generate():
     template = env.get_template("card_templates.html")
     html = template.render(rows=df.to_dict(orient="records"))
 
-    # wkhtmltopdf のパスを明示
-    config = pdfkit.configuration(
-        wkhtmltopdf=r"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"
-    )
+    wkhtmltopdf_path = shutil.which("wkhtmltopdf")
+    config = pdfkit.configuration(wkhtmltopdf=wkhtmltopdf_path)
 
     with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmpfile:
         pdfkit.from_string(
