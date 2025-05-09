@@ -210,7 +210,8 @@ def cards_generate():
             configuration=config,
             options = {
                 "enable-local-file-access": "",
-                "encoding": "UTF-8"
+                "encoding": "UTF-8",
+                "load-error-handling": "ignore"
             }
         )
 
