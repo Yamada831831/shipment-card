@@ -2,7 +2,9 @@ services:
   - type: web
     name: shipment-card
     env: python
-    buildCommand: pip install -r requirements.txt
+    buildCommand: |
+      apt-get update && apt-get install -y wkhtmltopdf
+      pip install -r requirements.txt
     startCommand: gunicorn app:app
     envVars:
       - key: PYTHON_VERSION
