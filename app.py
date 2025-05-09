@@ -170,7 +170,8 @@ def register_orders():
 
         df_final.to_sql("shipment_orders", conn, if_exists="append", index=False)
 
-    return "✅ 出荷予定 登録完了！"
+    return render_template("upload.html", unregistered_rows=None, uploaded_filename=None, success=True)
+
 
 
 @app.route("/cards_generate", methods=["POST"])
@@ -381,7 +382,9 @@ def add_order():
                 "other2": other2
             })
 
-        return "✅ 登録完了しました"
+        df = pd.read_sql("SELECT DISTINCT ship_to FROM master_specifications ORDER BY ship_to", engine)
+        return render_template("add_order.html", ship_tos=df.ship_to.tolist(), success=True)
+
 
     # GET: フォーム表示用にユニークな選択肢を取得
     df = pd.read_sql("SELECT DISTINCT ship_to FROM master_specifications ORDER BY ship_to", engine)
