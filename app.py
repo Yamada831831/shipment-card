@@ -212,7 +212,11 @@ def cards_generate():
             options = {
                 "enable-local-file-access": "",
                 "encoding": "UTF-8",
-                "load-error-handling": "ignore"
+                "load-error-handling": "ignore",
+                "margin-top": "10mm",
+                "margin-bottom": "10mm",
+                "margin-left": "10mm",
+                "margin-right": "10mm"
             }
         )
 
