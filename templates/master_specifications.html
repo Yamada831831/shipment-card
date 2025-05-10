@@ -62,36 +62,41 @@
                 <tbody>
                   {% for row in rows %}
                   <tr>
-                    <td>{{ loop.index }}</td>
-                    <input type="hidden" name="id_{{ counter }}" value="{{ row.id }}">
-                    <td>{{ row.product }}</td>
-                    <td>{{ row.spec }}</td>
-                    <td>{{ row.origin }}</td>
-                    <td><input type="text" name="bag_{{ counter }}" value="{{ row.bag or '' }}" class="form-control"></td>
-                    <td><input type="text" name="label_front_{{ counter }}" value="{{ row.label_front or '' }}" class="form-control"></td>
-                    <td><input type="text" name="label_back_{{ counter }}" value="{{ row.label_back or '' }}" class="form-control"></td>
-                    <td><input type="text" name="other1_{{ counter }}" value="{{ row.other1 or '' }}" class="form-control"></td>
-                    <td><input type="text" name="other2_{{ counter }}" value="{{ row.other2 or '' }}" class="form-control"></td>
-                    <td><input type="text" name="jan_code_{{ counter }}" value="{{ row.jan_code or '' }}" class="form-control"></td>
-                    <td><input type="text" name="type_{{ counter }}" value="{{ row.type or '' }}" class="form-control"></td>
-                    <td><input type="text" name="bundle_count_{{ counter }}" value="{{ row.bundle_count or '' }}" class="form-control"></td>
+                    <form method="POST" action="/master_specifications/update">
+                      <td>{{ loop.index }}</td>
+                      <input type="hidden" name="id" value="{{ row.id }}">
+                      <td>{{ row.product }}</td>
+                      <td>{{ row.spec }}</td>
+                      <td>{{ row.origin }}</td>
+                      <td><input type="text" name="bag" value="{{ row.bag or '' }}" class="form-control"></td>
+                      <td><input type="text" name="label_front" value="{{ row.label_front or '' }}" class="form-control"></td>
+                      <td><input type="text" name="label_back" value="{{ row.label_back or '' }}" class="form-control"></td>
+                      <td><input type="text" name="other1" value="{{ row.other1 or '' }}" class="form-control"></td>
+                      <td><input type="text" name="other2" value="{{ row.other2 or '' }}" class="form-control"></td>
+                      <td><input type="text" name="jan_code" value="{{ row.jan_code or '' }}" class="form-control"></td>
+                      <td><input type="text" name="type" value="{{ row.type or '' }}" class="form-control"></td>
+                      <td><input type="text" name="bundle_count" value="{{ row.bundle_count or '' }}" class="form-control"></td>
+                      <td><button type="submit" class="btn btn-sm btn-primary">保存</button></td>
+                    </form>
                   </tr>
                   {% set counter = counter + 1 %}
                   {% endfor %}
                   <tr>
-                    <td>{{ rows|length + 1 }}</td>
-                    <input type="hidden" name="id_{{ counter }}" value="new_{{ ship_to|replace(' ', '_') }}">
-                    <td><input type="text" name="product_{{ counter }}" class="form-control"></td>
-                    <td><input type="text" name="spec_{{ counter }}" class="form-control"></td>
-                    <td><input type="text" name="origin_{{ counter }}" class="form-control"></td>
-                    <td><input type="text" name="bag_{{ counter }}" class="form-control"></td>
-                    <td><input type="text" name="label_front_{{ counter }}" class="form-control"></td>
-                    <td><input type="text" name="label_back_{{ counter }}" class="form-control"></td>
-                    <td><input type="text" name="other1_{{ counter }}" class="form-control"></td>
-                    <td><input type="text" name="other2_{{ counter }}" class="form-control"></td>
-                    <td><input type="text" name="jan_code_{{ counter }}" class="form-control"></td>
-                    <td><input type="text" name="type_{{ counter }}" class="form-control"></td>
-                    <td><input type="text" name="bundle_count_{{ counter }}" class="form-control"></td>
+                    <form method="POST" action="/master_specifications/update">
+                      <td>{{ rows|length + 1 }}</td>
+                      <input type="hidden" name="id" value="new_{{ ship_to|replace(' ', '_') }}">
+                      <td><input type="text" name="product" class="form-control"></td>
+                      <td><input type="text" name="spec" class="form-control"></td>
+                      <td><input type="text" name="origin" class="form-control"></td>
+                      <td><input type="text" name="bag" class="form-control"></td>
+                      <td><input type="text" name="label_front" class="form-control"></td>
+                      <td><input type="text" name="label_back" class="form-control"></td>
+                      <td><input type="text" name="other1" class="form-control"></td>
+                      <td><input type="text" name="other2" class="form-control"></td>
+                      <td><input type="text" name="jan_code" class="form-control"></td>
+                      <td><input type="text" name="type" class="form-control"></td>
+                      <td><input type="text" name="bundle_count" class="form-control"></td>
+                    </form>
                   </tr>
                   {% set counter = counter + 1 %}
                 </tbody>

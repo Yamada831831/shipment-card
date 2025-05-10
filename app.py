@@ -438,23 +438,57 @@ def master_options():
     return jsonify(options)
 
 
-@app.route("/master_specifications", methods=["GET", "POST"])
-def master_specifications():
-    if request.method == "POST":
-        df = pd.read_sql("SELECT * FROM master_specifications ORDER BY id", engine)
+@app.route("/master_specifications/update", methods=["POST"])
+def update_master_spec_row():
+    data = request.form
+    id_ = data.get("id")
 
-        for i in range(len(df)):
-            id_ = request.form.get(f"id_{i}")
-            bag = request.form.get(f"bag_{i}")
-            label_front = request.form.get(f"label_front_{i}")
-            label_back = request.form.get(f"label_back_{i}")
-            other1 = request.form.get(f"other1_{i}")
-            other2 = request.form.get(f"other2_{i}")
-            jan_code = request.form.get(f"jan_code_{i}")
-            type_ = request.form.get(f"type_{i}")
-            bundle_count = request.form.get(f"bundle_count_{i}")
+    bag = data.get("bag")
+    label_front = data.get("label_front")
+    label_back = data.get("label_back")
+    other1 = data.get("other1")
+    other2 = data.get("other2")
+    jan_code = data.get("jan_code")
+    type_ = data.get("type")
+    bundle_count = data.get("bundle_count")
 
-            sql = text("""
+    # 新規登録と判定（空か new_xxx の形式）
+    if not id_ or id_.startswith("new_"):
+        product = data.get("product")
+        spec = data.get("spec")
+        origin = data.get("origin")
+        ship_to = id_.replace("new_", "").replace("_", " ") if id_ else "(未設定)"
+
+        if not (product and spec and origin):
+            return "📛 商品・規格・産地は必須です", 400
+
+        sql = text("""
+            INSERT INTO master_specifications (
+                ship_to, product, spec, origin, bag, label_front, label_back,
+                other1, other2, jan_code, type, bundle_count
+            ) VALUES (
+                :ship_to, :product, :spec, :origin, :bag, :label_front, :label_back,
+                :other1, :other2, :jan_code, :type, :bundle_count
+            )
+        """)
+        with engine.begin() as conn:
+            conn.execute(sql, {
+                "ship_to": ship_to,
+                "product": product,
+                "spec": spec,
+                "origin": origin,
+                "bag": bag,
+                "label_front": label_front,
+                "label_back": label_back,
+                "other1": other1,
+                "other2": other2,
+                "jan_code": jan_code,
+                "type": type_,
+                "bundle_count": bundle_count
+            })
+    else:
+        # 既存行はUPDATE
+        sql = text("""
             UPDATE master_specifications SET
                 bag = :bag,
                 label_front = :label_front,
@@ -463,73 +497,24 @@ def master_specifications():
                 other2 = :other2,
                 jan_code = :jan_code,
                 type = :type,
-                bundle_count = :bundle_count
+                bundle_count = :bundle_count,
+                updated_at = now()
             WHERE id = :id
-            """)
-            with engine.begin() as conn:
-                conn.execute(sql, {
-                    "bag": bag,
-                    "label_front": label_front,
-                    "label_back": label_back,
-                    "other1": other1,
-                    "other2": other2,
-                    "jan_code": jan_code,
-                    "type": type_,
-                    "bundle_count": bundle_count,
-                    "id": id_
-                })
+        """)
+        with engine.begin() as conn:
+            conn.execute(sql, {
+                "id": id_,
+                "bag": bag,
+                "label_front": label_front,
+                "label_back": label_back,
+                "other1": other1,
+                "other2": other2,
+                "jan_code": jan_code,
+                "type": type_,
+                "bundle_count": bundle_count
+            })
 
-
-
-        # 新規追加処理
-        for i in range(3):
-            ship_to = request.form.get(f"new_ship_to_{i}")
-            product = request.form.get(f"new_product_{i}")
-            spec = request.form.get(f"new_spec_{i}")
-            origin = request.form.get(f"new_origin_{i}")
-            if not ship_to or not product or not spec or not origin:
-                continue
-
-            bag = request.form.get(f"new_bag_{i}")
-            label_front = request.form.get(f"new_label_front_{i}")
-            label_back = request.form.get(f"new_label_back_{i}")
-            other1 = request.form.get(f"new_other1_{i}")
-            other2 = request.form.get(f"new_other2_{i}")
-            jan_code = request.form.get(f"new_jan_code_{i}")
-            type_ = request.form.get(f"new_type_{i}")
-            bundle_count = request.form.get(f"new_bundle_count_{i}")
-
-            sql = text("""
-            INSERT INTO master_specifications
-            (ship_to, product, spec, origin, bag, label_front, label_back, other1, other2, jan_code, type, bundle_count
-            VALUES(:ship_to, :product, :spec, :origin, :bag, :label_front, :label_back, :other1, :other2, :jan_code, :type, :bundle_count)
-            """)
-            with engine.begin() as conn:
-                conn.execute(sql, {
-                    "ship_to": ship_to,
-                    "product": product,
-                    "spec": spec,
-                    "origin": origin,
-                    "bag": bag,
-                    "label_front": label_front,
-                    "label_back": label_back,
-                    "other1": other1,
-                    "other2": other2,
-                    "jan_code": jan_code,
-                    "type": type_,
-                    "bundle_count": bundle_count
-                })
-
-
-        return redirect("/master_specifications")
-
-    df = pd.read_sql("SELECT * FROM master_specifications ORDER BY ship_to, product, origin", engine)
-    grouped = {}
-    for row in df.to_dict(orient="records"):
-        ship_to = row["ship_to"] or "(未設定)"
-        grouped.setdefault(ship_to, []).append(row)
-
-    return render_template("master_specifications.html", grouped=grouped)
+    return redirect("/master_specifications")
 
 @app.route("/")
 def index():
