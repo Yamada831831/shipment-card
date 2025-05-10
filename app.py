@@ -520,6 +520,17 @@ def update_master_spec_row():
 def index():
     return redirect("/orders")
 
+@app.route("/master_specifications", methods=["GET"])
+def master_specifications():
+    df = pd.read_sql("SELECT * FROM master_specifications ORDER BY ship_to, product, origin", engine)
+    grouped = {}
+    for row in df.to_dict(orient="records"):
+        ship_to = row["ship_to"] or "(未設定)"
+        grouped.setdefault(ship_to, []).append(row)
+
+    return render_template("master_specifications.html", grouped=grouped)
+
+
 @app.route("/ping")
 def ping():
     return "pong", 200
