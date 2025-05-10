@@ -332,6 +332,8 @@ def add_order():
         total_quantity = quantity * unit_count
         form_ = data.get("form")
         delivery = data.get("delivery") or ""
+        if delivery and "(追加)" not in delivery:
+            delivery += "(追加)"
 
         # マスタ照合
         query = """
@@ -377,8 +379,9 @@ def add_order():
 
 
 
+        japanese_weekdays = ["月", "火", "水", "木", "金", "土", "日"]
         shipment_date = pd.to_datetime(shipment_date)
-        weekday = shipment_date.strftime("%a")
+        weekday = japanese_weekdays[shipment_date.weekday()]
 
         with engine.begin() as conn:
             conn.execute(insert_sql, {
