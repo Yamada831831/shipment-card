@@ -466,7 +466,9 @@ def master_specifications():
                 bundle_count = %s
             WHERE id = %s
             """
-            engine.execute(sql, (bag, label_front, label_back, other1, other2, jan_code, type_, bundle_count, id_))
+            with engine.begin() as conn:
+                conn.execute(sql, (bag, label_front, label_back, other1, other2, jan_code, type_, bundle_count, id_))
+
 
         # 新規追加処理
         for i in range(3):
