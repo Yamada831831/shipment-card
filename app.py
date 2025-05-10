@@ -454,20 +454,31 @@ def master_specifications():
             type_ = request.form.get(f"type_{i}")
             bundle_count = request.form.get(f"bundle_count_{i}")
 
-            sql = """
+            sql = text("""
             UPDATE master_specifications SET
-                bag = %s,
-                label_front = %s,
-                label_back = %s,
-                other1 = %s,
-                other2 = %s,
-                jan_code = %s,
-                type = %s,
-                bundle_count = %s
-            WHERE id = %s
-            """
+                bag = :bag,
+                label_front = :label_front,
+                label_back = :label_back,
+                other1 = :other1,
+                other2 = :other2,
+                jan_code = :jan_code,
+                type = :type,
+                bundle_count = :bundle_count
+            WHERE id = :id
+            """)
             with engine.begin() as conn:
-                conn.execute(sql, (bag, label_front, label_back, other1, other2, jan_code, type_, bundle_count, id_))
+                conn.execute(sql, {
+                    "bag": bag,
+                    "label_front": label_front,
+                    "label_back": label_back,
+                    "other1": other1,
+                    "other2": other2,
+                    "jan_code": jan_code,
+                    "type": type_,
+                    "bundle_count": bundle_count,
+                    "id": id_
+                })
+
 
 
         # 新規追加処理
@@ -488,12 +499,27 @@ def master_specifications():
             type_ = request.form.get(f"new_type_{i}")
             bundle_count = request.form.get(f"new_bundle_count_{i}")
 
-            sql = """
+            sql = text("""
             INSERT INTO master_specifications
-            (ship_to, product, spec, origin, bag, label_front, label_back, other1, other2, jan_code, type, bundle_count)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-            """
-            engine.execute(sql, (ship_to, product, spec, origin, bag, label_front, label_back, other1, other2, jan_code, type_, bundle_count))
+            (ship_to, product, spec, origin, bag, label_front, label_back, other1, other2, jan_code, type, bundle_count
+            VALUES(:ship_to, :product, :spec, :origin, :bag, :label_front, :label_back, :other1, :other2, :jan_code, :type, :bundle_count)
+            """)
+            with engine.begin() as conn:
+                conn.execute(sql, {
+                    "ship_to": ship_to,
+                    "product": product,
+                    "spec": spec,
+                    "origin": origin,
+                    "bag": bag,
+                    "label_front": label_front,
+                    "label_back": label_back,
+                    "other1": other1,
+                    "other2": other2,
+                    "jan_code": jan_code,
+                    "type": type_,
+                    "bundle_count": bundle_count
+                })
+
 
         return redirect("/master_specifications")
 
