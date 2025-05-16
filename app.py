@@ -284,7 +284,7 @@ def orders():
     printed = request.args.get("printed")
 
     # 🔽 新しく追加
-    sort_col = request.args.get("sort") or "shipment_date"
+    sort_col = request.args.get("sort") or "shipment_no"
     sort_order = request.args.get("order") or "desc"
     page = int(request.args.get("page") or 1)
     limit = 100
