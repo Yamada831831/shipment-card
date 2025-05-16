@@ -49,17 +49,16 @@
     <table class="table table-bordered table-sm">
       <thead class="table-light">
         <tr>
-          <th>No</th>
-          <th>出荷日</th>
-          <th>出荷先</th>
-          <th>商品</th>
-          <th>産地</th>
-          <th>規格</th>
-          <th>入数</th>
-          <th>出荷数</th>
-          <th>形態</th>
-          <th>合計数量</th>
-          <th>印刷</th>
+          <th><a href="?sort=shipment_date&order={{ 'asc' if sort != 'shipment_date' or order == 'desc' else 'desc' }}&page={{ page }}">出荷日</a></th>
+          <th><a href="?sort=ship_to&order={{ 'asc' if sort != 'ship_to' or order == 'desc' else 'desc' }}&page={{ page }}">出荷先</a></th>
+          <th><a href="?sort=product&order={{ 'asc' if sort != 'product' or order == 'desc' else 'desc' }}&page={{ page }}">商品</a></th>
+          <th><a href="?sort=origin&order={{ 'asc' if sort != 'origin' or order == 'desc' else 'desc' }}&page={{ page }}">産地</a></th>
+          <th><a href="?sort=spec&order={{ 'asc' if sort != 'spec' or order == 'desc' else 'desc' }}&page={{ page }}">規格</a></th>
+          <th><a href="?sort=unit_count&order={{ 'asc' if sort != 'unit_count' or order == 'desc' else 'desc' }}&page={{ page }}">入数</a></th>
+          <th><a href="?sort=quantity&order={{ 'asc' if sort != 'quantity' or order == 'desc' else 'desc' }}&page={{ page }}">出荷数</a></th>
+          <th><a href="?sort=form&order={{ 'asc' if sort != 'form' or order == 'desc' else 'desc' }}&page={{ page }}">形態</a></th>
+          <th><a href="?sort=total_quantity&order={{ 'asc' if sort != 'total_quantity' or order == 'desc' else 'desc' }}&page={{ page }}">合計数量</a></th>
+          <th><a href="?sort=printed&order={{ 'asc' if sort != 'printed' or order == 'desc' else 'desc' }}&page={{ page }}">印刷</a></th>
         </tr>
       </thead>
       <tbody>
@@ -90,6 +89,15 @@
     <p>📭 表示する出荷予定がありません。</p>
     {% endif %}
   </div>
+    <div class="mt-3 d-flex justify-content-between">
+      {% if page > 1 %}
+        <a href="?page={{ page - 1 }}&sort={{ sort }}&order={{ order }}" class="btn btn-outline-primary">← 前の100件</a>
+      {% else %}
+        <span></span>
+      {% endif %}
+
+      <a href="?page={{ page + 1 }}&sort={{ sort }}&order={{ order }}" class="btn btn-outline-primary ms-auto">次の100件 →</a>
+    </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

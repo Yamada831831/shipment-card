@@ -283,6 +283,13 @@ def orders():
     type_ = request.args.get("type")
     printed = request.args.get("printed")
 
+    # 🔽 新しく追加
+    sort_col = request.args.get("sort") or "shipment_date"
+    sort_order = request.args.get("order") or "desc"
+    page = int(request.args.get("page") or 1)
+    limit = 100
+    offset = (page - 1) * limit
+
     query = "SELECT * FROM shipment_orders WHERE TRUE"
     filters = []
 
@@ -305,9 +312,22 @@ def orders():
     if filters:
         query += " AND " + " AND ".join(filters)
 
-    df = pd.read_sql(query, engine)
-    return render_template("orders.html", rows=df.to_dict(orient="records"))
+    valid_cols = {"shipment_no", "shipment_date", "ship_to", "product", "origin", "spec", "unit_count", "quantity", "form", "total_quantity", "printed"}
+    if sort_col not in valid_cols:
+        sort_col = "shipment_date"
+    if sort_order not in {"asc", "desc"}:
+        sort_order = "desc"
 
+    query += f" ORDER BY {sort_col} {sort_order} LIMIT {limit} OFFSET {offset}"
+
+    df = pd.read_sql(query, engine)
+
+    return render_template("orders.html",
+        rows=df.to_dict(orient="records"),
+        page=page,
+        sort=sort_col,
+        order=sort_order
+    )
 
 @app.route("/order/<int:shipment_no>")
 def order_detail(shipment_no):
