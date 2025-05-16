@@ -49,6 +49,7 @@
     <table class="table table-bordered table-sm">
       <thead class="table-light">
         <tr>
+          <th><a href="?sort=shipment_no&order={{ 'asc' if sort != 'shipment_no' or order == 'desc' else 'desc' }}&page={{ page }}">No</a></th>
           <th><a href="?sort=shipment_date&order={{ 'asc' if sort != 'shipment_date' or order == 'desc' else 'desc' }}&page={{ page }}">出荷日</a></th>
           <th><a href="?sort=ship_to&order={{ 'asc' if sort != 'ship_to' or order == 'desc' else 'desc' }}&page={{ page }}">出荷先</a></th>
           <th><a href="?sort=product&order={{ 'asc' if sort != 'product' or order == 'desc' else 'desc' }}&page={{ page }}">商品</a></th>
