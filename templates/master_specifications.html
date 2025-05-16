@@ -96,6 +96,7 @@
                       <td><input type="text" name="jan_code" class="form-control"></td>
                       <td><input type="text" name="type" class="form-control"></td>
                       <td><input type="text" name="bundle_count" class="form-control"></td>
+                      <td><button type="submit" class="btn btn-sm btn-primary">保存</button></td>
                     </form>
                   </tr>
                   {% set counter = counter + 1 %}
@@ -119,18 +120,21 @@
         <tbody>
           {% for i in range(3) %}
           <tr>
-            <td><input type="text" name="new_ship_to_{{ i }}" class="form-control"></td>
-            <td><input type="text" name="new_product_{{ i }}" class="form-control"></td>
-            <td><input type="text" name="new_spec_{{ i }}" class="form-control"></td>
-            <td><input type="text" name="new_origin_{{ i }}" class="form-control"></td>
-            <td><input type="text" name="new_bag_{{ i }}" class="form-control"></td>
-            <td><input type="text" name="new_label_front_{{ i }}" class="form-control"></td>
-            <td><input type="text" name="new_label_back_{{ i }}" class="form-control"></td>
-            <td><input type="text" name="new_other1_{{ i }}" class="form-control"></td>
-            <td><input type="text" name="new_other2_{{ i }}" class="form-control"></td>
-            <td><input type="text" name="new_jan_code_{{ i }}" class="form-control"></td>
-            <td><input type="text" name="new_type_{{ i }}" class="form-control"></td>
-            <td><input type="text" name="new_bundle_count_{{ i }}" class="form-control"></td>
+            <form method="POST" action="/master_specifications/update">
+              <td><input type="text" name="new_ship_to_{{ i }}" class="form-control"></td>
+              <td><input type="text" name="new_product_{{ i }}" class="form-control"></td>
+              <td><input type="text" name="new_spec_{{ i }}" class="form-control"></td>
+              <td><input type="text" name="new_origin_{{ i }}" class="form-control"></td>
+              <td><input type="text" name="new_bag_{{ i }}" class="form-control"></td>
+              <td><input type="text" name="new_label_front_{{ i }}" class="form-control"></td>
+              <td><input type="text" name="new_label_back_{{ i }}" class="form-control"></td>
+              <td><input type="text" name="new_other1_{{ i }}" class="form-control"></td>
+              <td><input type="text" name="new_other2_{{ i }}" class="form-control"></td>
+              <td><input type="text" name="new_jan_code_{{ i }}" class="form-control"></td>
+              <td><input type="text" name="new_type_{{ i }}" class="form-control"></td>
+              <td><input type="text" name="new_bundle_count_{{ i }}" class="form-control"></td>
+              <td><button type="submit" class="btn btn-sm btn-primary">保存</button></td>
+            </form>
           </tr>
           {% endfor %}
         </tbody>
