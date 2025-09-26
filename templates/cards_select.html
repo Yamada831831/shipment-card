@@ -103,15 +103,68 @@
   </form>
   {% endif %}
 <script>
+  // 既存のUI操作はそのまま
   function toggleAll(source) {
-    const checkboxes = document.querySelectorAll('input[name="selected_ids"]');
+    const checkboxes = document.querySelectorAll('form[action="/cards_generate"] input[name="selected_ids"]');
     checkboxes.forEach(cb => cb.checked = source.checked);
   }
 
   function selectTop50() {
-    const checkboxes = document.querySelectorAll('input[name="selected_ids"]');
+    const checkboxes = document.querySelectorAll('form[action="/cards_generate"] input[name="selected_ids"]');
     checkboxes.forEach((cb, i) => cb.checked = i < 50);
   }
+
+  // 送信時に「画面表示順のまま」selected_ids を再構成（サーバ変更不要）
+  (function () {
+    const form = document.querySelector('form[action="/cards_generate"]');
+    if (!form) return;
+
+    form.addEventListener('submit', (e) => {
+      // 1) 表示されている行順でチェック済みIDを収集
+      const rows = Array.from(form.querySelectorAll('tbody tr'));
+      const ordered = [];
+      for (const tr of rows) {
+        const cb = tr.querySelector('input[type="checkbox"][name="selected_ids"]');
+        if (cb && cb.checked) ordered.push(cb.value);
+      }
+
+      if (ordered.length === 0) {
+        e.preventDefault();
+        alert('1件も選択されていません。');
+        return;
+      }
+
+      // 2) 50件に制限（先頭50のみ送信）
+      const limited = ordered.slice(0, 50);
+      if (ordered.length > 50) {
+        alert(`50件までに制限しました（${ordered.length} → 50）。`);
+      }
+
+      // 3) 元のチェックボックスは送信対象から除外（disabled）
+      const allCbs = form.querySelectorAll('input[type="checkbox"][name="selected_ids"]');
+      allCbs.forEach(cb => cb.disabled = true);
+
+      // 4) hiddenで selected_ids を「表示順」で再構築（nameは既存のまま）
+      let shadow = form.querySelector('#ordered-container');
+      if (!shadow) {
+        shadow = document.createElement('div');
+        shadow.id = 'ordered-container';
+        shadow.style.display = 'none';
+        form.appendChild(shadow);
+      } else {
+        shadow.innerHTML = '';
+      }
+
+      for (const id of limited) {
+        const h = document.createElement('input');
+        h.type = 'hidden';
+        h.name = 'selected_ids';   // 既存名のまま送る
+        h.value = id;
+        shadow.appendChild(h);
+      }
+      // このまま送信（サーバ側は getlist('selected_ids') を従来どおり読むだけで順序が保持されます）
+    });
+  })();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
