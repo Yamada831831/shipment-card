@@ -7,7 +7,7 @@ from sqlalchemy import create_engine
 from jinja2 import Environment, FileSystemLoader
 import pdfkit
 import tempfile
-from sqlalchemy import text
+from sqlalchemy import text, bindparam, Integer
 import shutil
 
 app = Flask(__name__)
@@ -178,25 +178,46 @@ def register_orders():
 
 @app.route("/cards_generate", methods=["POST"])
 def cards_generate():
-    selected_ids = request.form.getlist("selected_ids")
-    if not selected_ids:
+    # 1) IDを受け取り（順序保持）、整数化・重複除去・上限50
+    raw_ids = request.form.getlist("selected_ids")
+    ids = []
+    seen = set()
+    for x in raw_ids:
+        try:
+            v = int(x)
+        except Exception:
+            continue
+        if v not in seen:
+            ids.append(v)
+            seen.add(v)
+        if len(ids) >= 50:
+            break
+
+    if not ids:
         return "📛 出力対象が選択されていません。", 400
 
-    ids_str = ",".join(selected_ids)
-    query = f"""
-        SELECT * FROM shipment_orders
-        WHERE id IN ({ids_str})
-        ORDER BY shipment_no
-    """
-    df = pd.read_sql(query, engine)
+    # 2) 安全に取得（IN の expanding プレースホルダを利用）
+    sql = text("SELECT * FROM shipment_orders WHERE id IN :ids")\
+            .bindparams(bindparam("ids", expanding=True))
+    df = pd.read_sql(sql, engine, params={"ids": ids})
 
-    # 🔽 ここで None を空文字に置換
+    if df.empty:
+        return "📛 対象のデータが見つかりませんでした。", 400
+
+    # 3) 受け取った順に並べ直し（DBの返却順に依存しない）
+    order_map = {v: i for i, v in enumerate(ids)}
+    if "id" not in df.columns:
+        return "📛 取得結果に id 列がありません。", 500
+    df["__order"] = df["id"].map(order_map)
+    df = df.sort_values("__order").drop(columns="__order")
+
+    # 4) 表示整形
     df = df.fillna("")
+    # shipment_date が文字列でも安全にフォーマット
+    df["display_date"] = pd.to_datetime(df["shipment_date"], errors="coerce")\
+                            .dt.strftime("%Y/%m/%d").fillna("")
 
-    # display_date を追加
-    df["display_date"] = df["shipment_date"].apply(lambda x: x.strftime("%Y/%m/%d"))
-
-    # テンプレート読み込み・HTML構築（←ここが重要！）
+    # 5) HTML→PDF
     font_path = os.path.abspath("static/fonts/ipaexg.ttf")
     template = env.get_template("card_templates.html")
     html = template.render(rows=df.to_dict(orient="records"), font_path=font_path)
@@ -209,22 +230,22 @@ def cards_generate():
             html,
             tmpfile.name,
             configuration=config,
-            options = {
+            options={
                 "enable-local-file-access": "",
                 "encoding": "UTF-8",
                 "load-error-handling": "ignore",
                 "margin-top": "5mm",
                 "margin-bottom": "5mm",
                 "margin-left": "10mm",
-                "margin-right": "10mm"
-            }
+                "margin-right": "10mm",
+            },
         )
 
-        # printed = TRUE に更新
+        # 6) printed を安全に更新（こちらも expanding）
         with engine.begin() as conn:
-            conn.execute(
-                text(f"UPDATE shipment_orders SET printed = TRUE WHERE id IN ({ids_str})")
-            )
+            upd = text("UPDATE shipment_orders SET printed = TRUE WHERE id IN :ids")\
+                    .bindparams(bindparam("ids", expanding=True))
+            conn.execute(upd, {"ids": ids})
 
         return send_file(tmpfile.name, as_attachment=True, download_name="蔵出しカード.pdf")
 
